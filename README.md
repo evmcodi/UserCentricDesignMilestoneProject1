@@ -23,5 +23,9 @@ This is a website to help students to make the most of an education course throu
 ### Content
 
 ### Media
+ Images from Free-Photos on Pixabay
+ https://pixabay.com/photos/laptop-typing-internet-hands-1149412/
+
+https://pixabay.com/photos/startup-start-up-notebooks-creative-593327/
 
 ### Acknowledgements
