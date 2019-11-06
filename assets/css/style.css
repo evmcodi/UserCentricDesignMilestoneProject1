@@ -127,7 +127,8 @@ a {
         display: inline;
         /* margin: 20px; */
         /* padding: 20px; */
-        font-size: 44px;
+        font-size: 100%;
+        position: absolute;
     }
 
     /* Responsive Top navigation bar from https://www.w3schools.com/howto/howto_js_topnav_responsive.asp */
