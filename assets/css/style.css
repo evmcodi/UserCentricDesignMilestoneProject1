@@ -14,6 +14,22 @@
     font-style: normal;
 }
 
+
+/* Page fade-in animation */
+
+@keyframes pagefadein {
+    from {
+        opacity: 0%;
+    }
+
+    to {
+        opacity: 100%;
+    }
+}
+
+
+
+
 /* <body> element styling */
 
 body {
@@ -23,6 +39,14 @@ body {
     font-family: 'GidoleRegular', serif;
     padding: 0;
     margin: 0;
+
+    /* page fade-in animation */
+    animation-name: pagefadein;
+    animation-duration: 400ms;
+    animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+
 }
 
 /* h1 element styling */
@@ -40,7 +64,7 @@ p {
     margin: 30px;
 }
 
-@media (max-width: 767px) {
+@media (min-width: 767px) {
     p {
         margin: 30px;
     }
@@ -54,74 +78,164 @@ a {
 }
 
 
+/* Mobile navigation bar */
 
-
-/* Responsive Top navigation bar from https://www.w3schools.com/howto/howto_js_topnav_responsive.asp */
-/* Add a black background color to the top navigation */
-/* { */
-.topnav {
-    background-color: #333;
-    overflow: hidden;
-}
-
-/* Style the links inside the navigation bar */
-.topnav a {
-    float: left;
-    display: block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 17px;
-
-}
-
-/* Change the color of links on hover */
-.topnav a:hover {
-    background-color: #ddd;
-    color: black;
-}
-
-/* Add an active class to highlight the current page */
-.topnav a.active {
-    background-color: #4CAF50;
-    color: white;
-}
-
-/* Hide the link that should open and close the topnav on small screens */
-.topnav .icon {
-    display: none;
-}
-
+/* Hide the desktop navigation bar */
 @media (max-width: 767px) {
 
-    .topnav a:not(:first-child) {
+    .myheader {
         display: none;
     }
 
-    .topnav a.icon {
+    .myheadermob {
+        /* display: flex; */
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        background-color: #333;
+        height: 50px;
+    }
+
+
+
+    .pagetitlemob {
+        text-transform: uppercase;
+        text-align: centre;
+        display: inline;
+        margin: 0;
+        padding: 0;
+
+    }
+
+    .pagetitlemob h1 {
+        display: inline;
+        /* margin: 20px; */
+        /* padding: 20px; */
+        font-size: 44px;
+    }
+
+    /* Responsive Top navigation bar from https://www.w3schools.com/howto/howto_js_topnav_responsive.asp */
+    /* Add a black background color to the top navigation */
+    /* { */
+    .topnavmob {
+        background-color: #333;
+        overflow: hidden;
+    }
+
+    /* Style the links inside the navigation bar */
+    .topnavmob a {
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+
+    }
+
+    .pagetitlemob a {
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+
+    }
+
+    /* Change the color of links on hover */
+    .topnavmob a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    /* Add an active class to highlight the current page */
+    .topnavmob a.active {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+
+    .topnavmob a:not(icon) {
+        display: none;
+    }
+
+    .pagetitlemob a.icon {
         float: right;
         display: block;
     }
 
 
     /* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
-    .topnav.responsive {
+    .topnavmob.responsive {
         position: relative;
     }
 
-    .topnav.responsive a.icon {
+    .pagetitlemob.responsive a.icon {
         position: absolute;
         right: 0;
         top: 0;
     }
 
-    .topnav.responsive a {
+    .topnavmob.responsive a {
         float: none;
         display: block;
         text-align: left;
     }
 }
+
+
+/* Desktop navigation bar */
+
+@media (min-width: 767px) {
+    .myheader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+        background-color: #333;
+
+    }
+
+    .myheadermob {
+        display: none;
+    }
+
+
+
+    /* Responsive Top navigation bar from https://www.w3schools.com/howto/howto_js_topnav_responsive.asp */
+    /* Add a black background color to the top navigation */
+    /* { */
+
+    .topnav {
+        /* background-color: #333; */
+        overflow: hidden;
+        /* justify-content: flex-end; */
+    }
+
+    /* Style the links inside the navigation bar */
+    .topnav a {
+        /* float: right; */
+        display: inline-block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+
+    }
+
+    /* Change the color of links on hover */
+    .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    /* Add an active class to highlight the current page */
+    .topnav a.active {
+        background-color: #4CAF50;
+        color: white;
+    }
+}
+
 
 /* } */
 
@@ -133,22 +247,38 @@ a {
     text-align: centre;
     /* background-color: navy; */
     display: inline;
-    margin-top: 20px;
+    /* margin-top: 20px; */
+    justify-content: left;
+    vertical-align: middle;
+
 }
 
 .pagetitle h1 {
     display: inline;
     margin: 20px;
     padding: 20px;
+    vertical-align: middle;
 }
 
-@media (max-width: 767px) {
-    .pagetitle {
-        margin: 0;
-        padding: 0;
 
+/* Spacer styling for responsive header bar. */
+.spacer {
+    flex-grow: unset;
+    display: inline;
+}
+
+
+@media (min-width: 767px) {
+    .pagetitle {
+        position: relative;
+    }
+
+    .spacer {
+        flex-grow: 1;
     }
 }
+
+
 
 
 /* Subheader styling */
@@ -166,45 +296,69 @@ a {
 
 .content {
     display: grid;
+    grid-template: auto auto / auto;
 
-    grid-template: auto / 4fr 1fr 4fr;
 }
 
-@media (max-width: 767px) {
+@media (min-width: 767px) {
     .content {
-        display: inherit;
+        /* display: inherit; */
+        grid-template: auto / 5fr 20px 5fr 50px;
+
     }
 }
+
 
 
 #laptopimage {
-    height: 300px;
-    width: 300px;
+    grid-column-start: unset;
+    grid-column-end: unset;
 
-    grid-column-start: 3;
-    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 2;
 }
 
 #laptopimage img {
-    size: 100%;
-    height: 100%;
     width: 100%;
-}
-
-
-@media (max-width: 767px) {
-    img {
-        width: 100%;
-        margin-bottom: 40px;
-    }
+    margin-bottom: 40px;
+    margin-top: 0px;
 }
 
 .homecontent {
-    margin-right: 30px;
-    margin-left: 30px;
+    margin-right: 0px;
+    margin-left: 0px;
 
     grid-column-start: 0;
 }
+
+
+@media (min-width: 767px) {
+
+    #laptopimage {
+        /* height: 300px; */
+        /* width: 300px; */
+
+        grid-column-start: 3;
+        grid-column-end: 4;
+    }
+
+    #laptopimage img {
+        /* size: 100%; */
+        /* height: 100%; */
+        width: 100%;
+        align-content: center;
+        margin-top: 100px;
+    }
+
+    .homecontent {
+        margin-right: 30px;
+        margin-left: 30px;
+
+        grid-column-start: 0;
+    }
+
+}
+
 
 
 
@@ -215,14 +369,16 @@ footer {
     padding: 20px;
 
     display: flex;
-    justify-content: space-evenly;
+    flex-direction: column;
+
     /* flex-wrap: wrap; */
 
 }
 
-@media (max-width: 767px) {
+@media (min-width: 767px) {
     footer {
-        flex-direction: column;
+        justify-content: space-evenly;
+        flex-direction: row;
     }
 }
 
@@ -243,7 +399,7 @@ footer {
 @media (min-width: 768px) and (max-width: 991px) {
 
     body {
-        background-color: #b1893f;
+        background-color: #0f2036;
     }
 }
 
@@ -251,6 +407,7 @@ footer {
 @media (min-width: 992px) and (max-width: 1920px) {
 
     body {
-        background-color: #444;
+        /* background-color: #444; */
+        background-color: rgb(22, 22, 22);
     }
 }
