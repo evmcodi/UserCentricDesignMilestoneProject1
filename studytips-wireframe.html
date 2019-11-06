@@ -1,0 +1,1213 @@
+﻿<html><head>
+		<title>quickMockup</title>
+		<meta charset="UTF-8">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<script src="scripts/jquery.js"></script>
+		<script src="scripts/jquery-ui.js"></script>
+		<script src="scripts/showdown.js"></script>
+		<script src="scripts/showdownUIExtensions.js"></script>
+		<script src="scripts/mousetrap.js"></script>
+		<script src="scripts/filereader.js"></script>
+		<script src="scripts/FileSaver.js"></script>
+
+		<script src="scripts/jqUiEditMD2HTML.js"></script>
+
+		<link href="styles/jquery-ui.css" rel="stylesheet">
+
+
+		<style>
+			#toolbar, #widgetCollectionWrap{display:none;}
+
+			body, div{
+			padding:0;
+			margin:0;
+			}
+
+			#canvas .custom-selected.ui-resizable>.ui-resizable-handle{
+				pointer-events: auto;
+				background: rgba(0,0,0,0); /*the following stylesheet shows these again. If only html is saved (and the mockup not interactive thus, they are hidden)*/
+			}
+
+			#canvasWrap{
+				background-color: gray;
+			}
+
+			#canvas{
+				background-color: white;
+			}
+
+
+
+		</style>
+		<link href="styles/quickMockupInteractive.css" rel="stylesheet">
+
+		<!--elements -->
+		<!-- style has an ID so we can retrieve it for exporting html and css via a script reading the innerHTML of the style -->
+		<style id="elementStyles">
+			/*all*/
+			.newMockElement, .mockElement{
+				box-sizing: border-box;
+				font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+				position: relative;
+				background:rgba(255,255,255,0.8);
+				width:10em;
+			}
+			.newMockElement > div.editableArea, .mockElement > div.editableArea{
+				width: 100%;
+				box-sizing: border-box;
+			}
+
+			.newMockElement a, .mockElement a{
+				color: #0093ff;
+				pointer-events: none; /*otherwise, links in elements, markdown etc. can be clicked and lead away from the app.*/
+			}
+			.newMockElement a, .mockElement a:visited{
+				color: #0093ff /*no visted state for mockup links*/
+			}
+
+
+			.editableArea>p{
+				margin: 0 0 0 0;
+				padding: 0 0 0 0;
+			}
+
+			/*buttons*/
+			.newMockElement.button, .mockElement.button{
+				justify-content: center;
+				align-items: center;
+				display: flex;
+				border:2px solid #333;
+				border-radius:3px;
+				background:white;
+				width: 8em;
+				width: 8em;
+				height:3em;
+				box-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+			}
+
+			/*Window*/
+			.newMockElement.dialogWindow, .mockElement.dialogWindow{
+				border:2px solid gray;
+				border-radius:3px;
+				width: 400px;
+				height:200px;
+			}
+
+			.newMockElement.dialogWindow > .dialogWindow-bar, .mockElement.dialogWindow > .dialogWindow-bar{
+				background-color:silver;
+				border-bottom: 2px solid #333;
+				border-radius: 3px;
+				padding:7px;
+				height:1.6em;
+			}
+
+			.newMockElement.dialogWindow > div > .dialogWindow-closeButton, .mockElement.dialogWindow > div > .dialogWindow-closeButton{
+				padding:4px;
+				font-size:1.5em;
+				margin-top: -0.4em;
+				float:right;
+			}
+
+			/*tabs*/
+			.newMockElement.tabs, .mockElement.tabs{
+				background: rgba(0,0,0,0);
+				width:30em;
+				border-bottom:1px solid rgba(0,0,0,0.3);
+			}
+
+			.newMockElement.tabs>.editableArea, .mockElement.tabs>.editableArea{
+				border-bottom: 2px solid gray;
+				background: rgba(0,0,0,0);
+				box-sizing: border-box;
+				width:100%;
+				margin:0;
+			}
+
+			.newMockElement.tabs>.editableArea a, .mockElement.tabs>.editableArea a{
+				pointer-events: none; /*prevent accidental navigation*/
+			}
+
+			.newMockElement.tabs>.editableArea>ul, .mockElement.tabs>.editableArea>ul{
+				box-sizing: border-box;
+				width:100%;
+				margin:0;
+				padding:0;
+			}
+
+			.newMockElement.tabs>.editableArea>ul>li, .mockElement.tabs> .editableArea>ul>li{
+				display: inline-block;
+				padding: 5px 16px;
+				border: 1px solid gray;
+				border-top-left-radius: 3px;
+				border-top-right-radius: 3px;
+				margin: 0 0 -2px 0.3em;
+				font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+				background:white;
+			}
+
+			.mockElement.tabs>.editableArea>ul>li.item-highlighted, .newMockElement.tabs>.editableArea>ul>li.item-highlighted{
+				background: #DDD;
+			}
+
+			.newMockElement.label .mockElement.label{
+				width:7em;
+				background-color: transparent;
+			}
+
+			.newMockElement.link, .mockElement.link{
+				width:7em;
+				color:#0093ff;
+				text-decoration: underline;
+			}
+
+			/*headline*/
+			.newMockElement.headline>h1, .mockElement.headline>h1{
+				margin:0;
+				background-color: transparent;
+			}
+			/*paragraph*/
+			.newMockElement.paragraph>p{
+				margin:0;
+			}
+
+			/*table*/
+			.newMockElement.table, .mockElement.table{
+				width:10em;
+			}
+			.newMockElement.table table, .mockElement.table table{
+				width: 100%;
+				border-collapse: collapse;
+			}
+			.newMockElement.table table td, .mockElement.table table td, .newMockElement.table table th, .mockElement.table table th{
+				border: 1px solid gray;
+			}
+
+			.newMockElement.table table th, .mockElement.table table th{
+				border-bottom: 2px solid black;
+			}
+
+			/*just a rectangle*/
+			.newMockElement.rect , .mockElement.rect{
+				border:2px solid #333;
+				width:200px;
+				height:50px;
+				background-color: transparent;
+			}
+
+			.newMockElement.grayrect , .mockElement.grayrect{
+				border:2px solid #333;
+				width:200px;
+				height:50px;
+				background-color: rgba(0,0,0,0.2);
+			}
+
+
+			/*optionlist*/
+
+			.newMockElement.optionRadiobutton , .mockElement.optionRadiobutton{
+				box-sizing: border-box;
+				background-color: transparent;
+			}
+
+			.newMockElement.optionRadiobutton .editableArea li, .mockElement.optionRadiobutton .editableArea li{
+				display: block;
+			}
+
+			.newMockElement.optionRadiobutton ul, .mockElement.optionRadiobutton ul{
+				margin:0;
+				padding: 0;
+			}
+
+			.newMockElement.optionRadiobutton .editableArea li::before, .mockElement.optionRadiobutton .editableArea li::before{
+				/*implements a simulated radio button, since uiconde circles and the "fisheye" character were inconsisted in size*/
+				content: " ";
+				display: inline-block;
+				background: white;
+				width: 0.8em;
+				height: 0.8em;
+				position: relative;
+				top: 0.1em;
+				margin: 0 0.3em 0 0;
+				padding: 0;
+				border-radius: 10em;
+				border: 2px inset gray;
+				box-sizing: border-box;
+			}
+
+			.newMockElement.optionRadiobutton .editableArea li.item-highlighted::before, .mockElement.optionRadiobutton .editableArea li.item-highlighted::before{
+				content: "";
+				background: black;
+				background-clip: content-box;
+				padding: 0.1em;
+			}
+
+			/*Checkboxes*/
+			.newMockElement.optionCheckbox , .mockElement.optionCheckbox{
+				box-sizing: border-box;
+				background-color: transparent;
+			}
+
+			.newMockElement.optionCheckbox .editableArea li, .mockElement.optionCheckbox .editableArea li{
+				display: block;
+			}
+
+			.newMockElement.optionCheckbox ul, .mockElement.optionCheckbox ul{
+				margin:0;
+				padding: 0;
+			}
+
+
+			.newMockElement.optionCheckbox .editableArea li::before, .mockElement.optionCheckbox .editableArea li::before{
+				content:"☐ "
+			}
+
+			.newMockElement.optionCheckbox .editableArea li.item-highlighted::before, .mockElement.optionCheckbox .editableArea li.item-highlighted::before{
+				content:"☑ ";
+			}
+
+			/*Dropdown*/
+			.dropdownList{
+				border:2px solid gray;
+				border-radius: 3px;
+				padding: 0px 0 0px 0.4em;
+				display: table;
+				background-color: white;
+			}
+
+			.dropdownList .editableArea{
+				display: table-cell;
+				text-align: center;
+				height: 100%;
+				vertical-align: middle;
+			}
+
+			.dropdownList .mockelement-dropdown-arrow{
+				border-left: 1px solid rgb(128, 128, 128);
+				padding: 0px 0.4em;
+				display: table-cell;
+				text-align: center;
+				height: 100%;
+				vertical-align: middle;
+				background: #EEE;
+
+
+			}
+			/*input Box*/
+			.newMockElement.inputbox, .mockElement.inputbox{
+			border:2px solid darkgray;
+			align-items: center;
+			display: flex;
+			border:2px solid #333;
+			padding-left:0.4em;
+			}
+
+			/*spinner*/
+			.newMockElement.spinner, .mockElement.spinner{
+			border:2px solid darkgray;
+			justify-content: center;
+			align-items: center;
+			display: flex;
+			border:2px solid #333;
+			background-color: white;
+			}
+
+			.newMockElement.spinner::before, .mockElement.spinner::before{
+				content: "▴";
+				position: absolute;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				right: 0;
+				top: 0;
+				width: 1.5em;
+				height: 50%;
+				background: lightgray;
+				font-size: 0.7em;
+			}
+
+			.newMockElement.spinner::after, .mockElement.spinner::after{
+				content:"▾";
+				position: absolute;
+				display: flex;
+				justify-content: center;
+	align-items: center;
+				right: 0px;
+				bottom: 0px;
+				width: 1.5em;
+				height: 50%;
+				background: lightgray ;
+				font-size: 0.7em;
+				box-sizing: border-box;
+				padding-bottom: 0.2em;
+				border-top: 1px solid gray;
+			}
+
+
+			/*slider*/
+			.newMockElement.slider,
+			.mockElement.slider{
+				align-items: center;
+				display:flex;
+			}
+
+			.newMockElement.slider:before,
+			.mockElement.slider::before{
+				content:" ";
+				height:0.5em;
+				width:0.5em;
+				background: white;
+				border: 3px solid #333;
+				border-radius: 10em;
+				position: relative;
+				left:3em;
+			}
+
+			.newMockElement.slider:after,
+			.mockElement.slider::after{
+				content:" ";
+				height: 2px;
+				background: #222;
+				width:100%;
+			}
+			/*loading indicator*/
+			.newMockElement.loadingIndicator,
+			.mockElement.loadingIndicator{
+				border: 1px solid gray;
+				border-radius: 2px;
+				background-color: white;
+				padding: 0;
+				justify-content: center;
+				align-items: center;
+				display: flex;
+				position: relative
+			}
+
+			.newMockElement.loadingIndicator .bar,
+			.mockElement.loadingIndicator .bar{
+				 margin: 0;
+					background-color: rgba(0, 0, 0, 0.21);
+				width: 70%;
+				display: block;
+				position: absolute;
+				height: 100%;
+				top: 0;
+				left: 0;
+				text-align: center;
+			}
+
+			/*entries vertical*/
+			.newMockElement.entries-horizontal, .mockElement.entries-horizontal{
+				background: rgba(0,0,0,0);
+				width:15em;
+			}
+
+			.newMockElement.entries-horizontal .editableArea, .mockElement.entries-horizontal .editableArea{
+				background: rgba(0,0,0,0);
+				box-sizing: border-box;
+				width:100%;
+				height: 100%;
+				margin:0;
+			}
+
+			.newMockElement.entries-horizontal .editableArea ul, .mockElement.entries-horizontal .editableArea ul{
+				box-sizing: border-box;
+				width:100%;
+				height: 100%;
+				margin:0;
+				padding:0;
+				display: table;
+				border-collapse: collapse;
+			}
+
+			.newMockElement.entries-horizontal ul li, .mockElement.entries-horizontal ul li{
+				display: table-cell;
+				padding: 0.2em;
+				border: 1px solid gray;
+				border-collapse: collapse;
+				margin: 0;
+				font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+				text-align: center;
+				vertical-align: middle;
+			}
+
+			.mockElement.entries-horizontal ul li.item-highlighted{
+				background: #DDD;
+			}
+
+			/*entries horizontal*/
+			.newMockElement.entries-vertical, .mockElement.entries-vertical{
+				background: rgba(0,0,0,0);
+				width:30em;
+			}
+
+			.newMockElement.entries-vertical .editableArea, .mockElement.entries-vertical .editableArea{
+				background: rgba(0,0,0,0);
+				box-sizing: border-box;
+				width:100%;
+				height: 100%;
+				margin:0;
+			}
+
+			.newMockElement.entries-vertical .editableArea ul, .mockElement.entries-vertical .editableArea ul{
+				box-sizing: border-box;
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.newMockElement.entries-vertical ul li, .mockElement.entries-vertical ul li{
+				margin: 0px;
+				font-family: "Comic Sans MS","Comic Sans",cursive;
+				width: 150px;
+				padding: 0.2em;
+				flex: 1 1 100%;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				border: 1px solid rgb(128, 128, 128);
+				border-collapse: collapse;
+				margin-top: -1px;
+			}
+
+			.mockElement.entries-vertical ul li.item-highlighted{
+				background: #DDD;
+			}
+
+
+			/*boxes vertical*/
+			.newMockElement.boxes-horizontal, .mockElement.boxes-horizontal{
+				background: rgba(0,0,0,0);
+				width:15em;
+			}
+
+			.newMockElement.boxes-horizontal .editableArea, .mockElement.boxes-horizontal .editableArea{
+				background: rgba(0,0,0,0);
+				box-sizing: border-box;
+				width:100%;
+				height: 100%;
+				margin:0;
+			}
+
+			.newMockElement.boxes-horizontal .editableArea ul, .mockElement.boxes-horizontal .editableArea ul{
+				box-sizing: border-box;
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				display: flex;
+				flex-direction: row;
+			}
+
+			.newMockElement.boxes-horizontal ul li, .mockElement.boxes-horizontal ul li{
+				padding: 0.2em;
+				border: 1px solid rgb(128, 128, 128);
+				font-family: "Comic Sans MS","Comic Sans",cursive;
+				margin: 0.2em;
+				display: flex;
+				flex: 1 1 auto;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.mockElement.boxes-horizontal ul li.item-highlighted{
+				background: #DDD;
+			}
+
+			/*boxes vertical*/
+			.newMockElement.boxes-vertical, .mockElement.boxes-vertical{
+				background: rgba(0,0,0,0);
+				width:10em;
+			}
+
+			.newMockElement.boxes-vertical .editableArea, .mockElement.boxes-vertical .editableArea{
+				background: rgba(0,0,0,0);
+				box-sizing: border-box;
+				width:100%;
+				height: 100%;
+				margin:0;
+			}
+
+			.newMockElement.boxes-vertical .editableArea ul, .mockElement.boxes-vertical .editableArea ul{
+				box-sizing: border-box;
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.newMockElement.boxes-vertical ul li, .mockElement.boxes-vertical ul li{
+				margin: 1.5% 0 0 0;
+				font-family: "Comic Sans MS","Comic Sans",cursive;
+				width: 99%;
+				padding: 0.2em;
+				flex: 1 1 100%;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				border: 1px solid rgb(128, 128, 128);
+				border-collapse: collapse;
+			}
+
+			.mockElement.boxes-vertical ul li.item-highlighted{
+				background: #DDD;
+			}
+
+			/*iconbar*/
+
+
+			.newMockElement.boxes-iconbar-horizontal ul>li, .mockElement.boxes-iconbar-horizontal ul>li{
+				border: 2px solid rgb(128, 128, 128);
+				display: flex;
+				justify-content: center;
+				font-size: 1.7em;
+				align-items: center;
+				border-radius: 3px;
+				color: rgb(51, 51, 51);
+				flex: 1 1 0%;
+				margin: 0.1em;
+				padding: 0.1em 0.1em 0.2em;
+			}
+			.newMockElement.boxes-iconbar-horizontal ul>li{
+			min-width: 1em;
+			}
+
+		/*image placeholder*/
+		.newMockElement.imageplaceholder, .mockElement.imageplaceholder{
+			color:darkgray;
+			background-color: lightgray;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+			height:5em;
+		}
+
+		/*meta: note*/
+		.newMockElement.note, .mockElement.note{
+		background: #f7ee9e;
+		background: linear-gradient(to bottom, #f7ee9e 0%,#e0d68f 99%);
+		border: 0px none;
+		box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.4);
+		transform: rotate(-3deg);
+		width:150px;
+		height:150px;
+		}
+
+		.newMockElement.note > *, .mockElement.note > *{
+			transform: rotate(3deg); /*so the text is not rotated*/
+		}
+
+		.newMockElement.note .editableArea, .mockElement.note .editableArea{
+			padding:0.5em;
+		}
+
+		/*Meta: arrow note*/
+		.newMockElement.arrownote, .mockElement.arrownote{
+		background: #f7ee9e;
+		border: 0px none;
+		box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.4);
+		width:150px;
+		height:30px;
+		}
+
+		.newMockElement.arrownote .editableArea, .mockElement.arrownote .editableArea{
+			padding:0.2em;
+		}
+
+		.newMockElement.arrownote::before, .mockElement.arrownote::before{
+			width: 0;
+		height: 0;
+		margin-left:-15px;
+		margin-top:0px;
+		border-style: solid;
+		border-width: 15px 15px 15px 0;
+		border-color: transparent #eae193 transparent transparent;
+	content:"";
+	position:absolute
+		}
+
+		.newMockElement.note .editableArea, .mockElement.note .editableArea{
+			padding:0.5em;
+		}
+	</style>
+</head>
+
+<body style="cursor: auto;">
+<div id="appContainer">
+<div id="widgetCollectionWrap" class="ui-resizable" style="width: 323px;">
+	<ul id="widgetCollection">
+		<!--
+
+				Tentative Description for creating elements:
+
+					In each list Element goes a div. This Div is the Interface Element which can be dragged to the canvas.
+					Each element has the class "newMockElement". This is changed to "mockElement" when it is added to the cavas.
+					Also each element can have other classes.
+
+					In the Div there can be other nested elements.
+
+					One of these elements *can* hold text that can be edited.  This is done by adding the attribute "data-editablearea" to this element.
+
+					The way the text is edited can be customized, by adding the attribute data-editable-mode= to it. The attribute can have the following values: "markdown", "uielements", "plain". If you set nothing, markdown is assumed.
+
+					markdown: Is markdown with a table extension and the possibility to create radiobuttons via "(x)" and checkboxes via [x]
+					uielements: for creating lists where the items are seperated by a ";". List items can highlighted (item-highlighted class is added to the <li> element) by adding a "*" in front: "normal; normal; *I am Active; normal item again; …"
+					plain: plain text
+
+					DO: give your element an additional (aside the newMockupElement) class: "newMockupElement fooBarClass".
+
+					DO: Use ">" (direct child) instead of the " " (descendant operator); If elements are nested it can have strange side effects since the nested element will have styles that it did not have before.
+
+					DONT:
+					* give the element an id. The id is set by the script.
+
+				-->
+
+				<li title="button">
+					<div class="newMockElement button ui-draggable ui-draggable-handle" data-editable-content="OK" data-editable-mode="plain">
+						<span class="editableArea">OK</span>
+					</div>
+				</li>
+				<li title="tabs"><!-- Tabs -->
+					<div class="newMockElement tabs ui-draggable ui-draggable-handle" data-editable-content="Tab1;*Tab2; Tab3" data-editable-mode="uielements">
+						<div class="editableArea">
+							<ul>
+								<li>Tab1</li>
+								<li class="item-highlighted">Tab2</li>
+								<li>Tab3</li>
+							</ul>
+
+						</div>
+					</div>
+				</li>
+				<li title="Short text label">
+					<div class="newMockElement label ui-draggable ui-draggable-handle" data-editable-content="label" data-editable-mode="plain">
+						<div class="editableArea">Label</div>
+					</div>
+				</li>
+				<li title="a link">
+					<div class="newMockElement link ui-draggable ui-draggable-handle" data-editable-content="link" data-editable-mode="plain">
+						<div class="editableArea">Link</div>
+					</div>
+				</li>
+				<li title="checkbox list">
+					<div class="newMockElement optionCheckbox ui-draggable ui-draggable-handle" data-editable-content="option; *other option" data-editable-mode="uielements">
+						<div class="editableArea">
+							<ul>
+								<li>option</li>
+								<li class="item-highlighted">other option</li>
+							</ul>
+
+						</div>
+					</div>
+				</li>
+				<li title="radio-button list">
+					<div class="newMockElement optionRadiobutton ui-draggable ui-draggable-handle" data-editable-content="option; *other option" data-editable-mode="uielements">
+						<div class="editableArea">
+							<ul>
+								<li>option</li>
+								<li class="item-highlighted">other option</li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li title="dropdown element">
+					<div class="newMockElement dropdownList ui-draggable ui-draggable-handle" data-editable-content="DropdownTitle" data-editable-mode="plain">
+						<span class="editableArea">Dropdown Title</span><span class="mockelement-dropdown-arrow">▾</span>
+					</div>
+				</li>
+				<li title="spinner element">
+					<div class="newMockElement spinner ui-draggable ui-draggable-handle" data-editable-content="10" data-editable-mode="plain">
+						<span class="editableArea">10</span>
+					</div>
+				</li>
+				<li title="slider element">
+					<div class="newMockElement slider ui-draggable ui-draggable-handle">
+						<span> </span>
+					</div>
+				</li>
+				<li>
+					<div class="newMockElement loadingIndicator ui-draggable ui-draggable-handle">
+						<div class="bar"></div>
+						70%
+					</div>
+				</li>
+				<li>
+					<div class="newMockElement headline ui-draggable ui-draggable-handle" data-editable-content="headline1" data-editable-mode="plain">
+						<h1 class="editableArea">Headline1</h1>
+					</div>
+				</li>
+				<li title="Markdown-editable paragraph">
+					<div class="newMockElement paragraph ui-draggable ui-draggable-handle" data-editable-content="
+Paragraph
+(Markdown **Supported** !)">
+						<div class="editableArea">
+							Paragraph
+							(Markdown<strong> Supported</strong>!)
+						</div>
+					</div>
+				</li>
+				<li title="markdown table">
+					<div class="newMockElement table ui-draggable ui-draggable-handle" data-editable-content="
+| h1    | h2      |      h3 |
+|:------|:-------:|--------:|
+| lorem | ipsum   | dolor   |
+| first | second  | third   |
+					">
+						<div class="editableArea">
+							<table>
+							<thead>
+							<tr>
+							<th style="text-align:left;">h1</th>
+							<th style="text-align:center;">h2</th>
+							<th style="text-align:right;">h3</th>
+							</tr>
+							</thead>
+
+							<tbody>
+							<tr>
+							<td style="text-align:left;">lorem</td>
+							<td style="text-align:center;">ipsum</td>
+							<td style="text-align:right;">dolor</td>
+							</tr>
+
+							<tr>
+							<td style="text-align:left;">first</td>
+							<td style="text-align:center;">second</td>
+							<td style="text-align:right;">third</td>
+							</tr>
+
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</li>
+				<li title="simple OS window"><!-- Dialog Window -->
+					<div class="newMockElement dialogWindow ui-draggable ui-draggable-handle" data-editable-content="myWindow" data-editable-mode="plain">
+						<div class="dialogWindow-bar">
+							<span class="editableArea">Titel</span>
+							<span class="dialogWindow-closeButton">×</span>
+						</div>
+					</div>
+				</li>
+				<li title="a rectangle">
+					<div class="newMockElement rect ui-draggable ui-draggable-handle">
+					</div>
+				</li>
+				<li title="a gray rectangle">
+					<div class="newMockElement grayrect ui-draggable ui-draggable-handle">
+					</div>
+				</li>
+				<li title="horizontal list">
+					<div class="newMockElement entries-horizontal ui-draggable ui-draggable-handle" data-editable-content="Entry1;Entry2;*Entry3" data-editable-mode="uielements">
+						<div class="editableArea">
+							<ul>
+								<li>Entry1</li>
+								<li>Entry2</li>
+								<li class="item-highlighted">Entry3</li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li title="vertical list">
+					<div class="newMockElement entries-vertical ui-draggable ui-draggable-handle" data-editable-content="Entry1;Entry2;*Entry3" data-editable-mode="uielements">
+						<div class="editableArea">
+							<ul>
+								<li>Entry1</li>
+								<li>Entry2</li>
+								<li class="item-highlighted">Entry3</li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li title="horizontal boxes list (e.g. for toolbars)">
+					<div class="newMockElement boxes-horizontal ui-draggable ui-draggable-handle" data-editable-content="Entry1;Entry2;*Entry3" data-editable-mode="uielements">
+						<div class="editableArea">
+							<ul>
+								<li>Entry1</li>
+								<li>Entry2</li>
+								<li class="item-highlighted">Entry3</li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li title="vertical boxes list (e.g. for toolbars)">
+					<div class="newMockElement boxes-vertical ui-draggable ui-draggable-handle" data-editable-content="Entry1;Entry2;*Entry3" data-editable-mode="uielements">
+						<div class="editableArea">
+							<ul>
+								<li>Entry1</li>
+								<li>Entry2</li>
+								<li class="item-highlighted">Entry3</li>
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li title="horizontal boxes for toolbars">
+					<div class="newMockElement boxes-horizontal boxes-iconbar-horizontal ui-draggable ui-draggable-handle" data-editable-content="☰;⌂;⚑; ⚙; ✂;✐;✔;✘;↶;↷;◂;▸; ▴;▾" data-editable-mode="uielements">
+						<div class="editableArea">
+							<ul>
+								<li>☰</li><li>⌂</li><li>⚑</li><li> ⚙</li><li> ✂</li><li>✐</li><li>✔</li><li>✘</li><li>↶</li><li>↷</li><li>◂</li><li>▸</li><li> ▴</li><li>▾</li>
+							</ul>
+						</div>
+					</div>
+				</li>
+
+				<li title="image placeholder">
+					<div class="newMockElement imageplaceholder ui-draggable ui-draggable-handle" data-editable-content="Image" data-editable-mode="plain">
+						<div class="editableArea">
+						Image
+						</div>
+					</div>
+				</li>
+
+				<li title="Markdown-editable sticky note">
+					<div class="newMockElement meta-element note ui-draggable ui-draggable-handle" data-editable-content="Notes here!" data-editable-mode="markdown">
+						<div class="editableArea">
+						</div>
+					</div>
+				</li>
+
+				<li title="editable sticky arrow-note">
+					<div class="newMockElement meta-element arrownote ui-draggable ui-draggable-handle" data-editable-content="Notes here!" data-editable-mode="plain">
+						<div class="editableArea">
+						note!
+						</div>
+					</div>
+				</li>
+		</ul>
+	<div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div></div>
+
+
+		<div id="canvasWrap">
+			<div style="height: 7000px; width: 1919.57px;" class="ui-droppable" id="canvas">
+				<!-- this is example content-->
+
+
+
+<!-- example content end -->
+
+		
+
+
+			<div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 71.6px auto auto 15.6px; width: 1617px; height: 944px; z-index: auto;" id="mockElement_58826784861211">
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div><div class="entries-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="LearningAndStudySkills.ie;2019;email: lassinfo@learningandstudyskills.ie" data-editable-mode="uielements" style="position: absolute; inset: 887.9px auto auto 103.767px; width: 1492px; z-index: auto; height: 29px;" id="mockElement_98246737781388">
+						<div class="editableArea" id="editableArea_98246737781388"><ul><li>LearningAndStudySkills.ie</li><li>2019</li><li>email: lassinfo@learningandstudyskills.ie</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="
+Hi. I’m a student in a Full Stack Web Development course. This is a website to show what I find to help with studying. It may help others who are studying in a course, online or offline.
+
+<br>
+
+## For experienced students - refresh your learning and study skills.
+I would advise anyone doing a course to learn about the mindset and skills needed for how to learn. Perhaps you are someone who already has a good idea of how to do it, but it might be useful to think about it in order to firm up your understanding of learning and so you can memorise the steps.
+
+<br>
+
+## For inexperienced students - learn how to study effectively to make the most of your course
+
+If you haven’t been in an education course for a while then it might be especially useful to learn about the skills involved in learning, so that you have the best opportunity to make the most progress and gain as much positive value from a course." style="position: absolute; inset: 290.1px auto auto 81.6333px; width: 738px; height: 445px; z-index: auto;" id="mockElement_85311447398822">
+						<div class="editableArea" id="editableArea_85311447398822"><p>Hi. I’m a student in a Full Stack Web Development course. This is a website to show what I find to help with studying. It may help others who are studying in a course, online or offline.</p>
+
+<p><br></p>
+
+<h2 id="forexperiencedstudentsrefreshyourlearningandstudyskills">For experienced students - refresh your learning and study skills.</h2>
+
+<p>I would advise anyone doing a course to learn about the mindset and skills needed for how to learn. Perhaps you are someone who already has a good idea of how to do it, but it might be useful to think about it in order to firm up your understanding of learning and so you can memorise the steps.</p>
+
+<p><br></p>
+
+<h2 id="forinexperiencedstudentslearnhowtostudyeffectivelytomakethemostofyourcourse">For inexperienced students - learn how to study effectively to make the most of your course</h2>
+
+<p>If you haven’t been in an education course for a while then it might be especially useful to learn about the skills involved in learning, so that you have the best opportunity to make the most progress and gain as much positive value from a course.</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### A website that helps you to make the most of an education course through teaching 'learning how to learn'." style="position: absolute; inset: 149.833px auto auto 225.633px; width: 1169px; z-index: auto; height: 62px;" id="mockElement_18319845274531">
+						<div class="editableArea" id="editableArea_18319845274531"><h3 id="awebsitethathelpsyoutomakethemostofaneducationcoursethroughteachinglearninghowtolearn">A website that helps you to make the most of an education course through teaching 'learning how to learn'.</h3></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 276.617px auto auto 953.467px; width: 586px; height: 420px; z-index: auto;" id="mockElement_88268534684861">
+						<div class="editableArea" id="editableArea_88268534684861">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 2px auto auto 1px; width: 1607.13px; height: 121.133px; z-index: auto;" id="mockElement_25257266031332">
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div><div class="headline ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Study Skills" data-editable-mode="plain" style="position: absolute; inset: 47.7px auto auto 27.6px; width: 240px; z-index: auto; height: 38px;" id="mockElement_53240786477894">
+						<h1 class="editableArea" id="editableArea_53240786477894">Study Skills</h1>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="boxes-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="*Home;Why study?;How to study?;About;Contact" data-editable-mode="uielements" style="position: absolute; inset: 32.3px auto auto 359.6px; z-index: auto; width: 1193px; height: 59px;" id="mockElement_76563123031050">
+						<div class="editableArea" id="editableArea_76563123031050"><ul><li class="item-highlighted">Home</li><li>Why study?</li><li>How to study?</li><li>About</li><li>Contact</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div></div></div><div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 4850.2px auto auto 8.20001px; width: 1617px; height: 944px; z-index: auto;" id="mockElement_89860657345002">
+					<div class="entries-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="LearningAndStudySkills.ie;2019;email: lassinfo@learningandstudyskills.ie" data-editable-mode="uielements" style="position: absolute; inset: 887.9px auto auto 103.767px; width: 1492px; z-index: auto; height: 29px;" id="mockElement_33148269269486">
+						<div class="editableArea" id="editableArea_33148269269486"><ul><li>LearningAndStudySkills.ie</li><li>2019</li><li>email: lassinfo@learningandstudyskills.ie</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 2px auto auto 1px; width: 1607.13px; height: 121.133px; z-index: auto;" id="mockElement_82946913343721">
+					<div class="headline ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Study Skills" data-editable-mode="plain" style="position: absolute; inset: 47.7px auto auto 27.6px; width: 240px; z-index: auto; height: 38px;" id="mockElement_97549180500884">
+						<h1 class="editableArea" id="editableArea_97549180500884">Study Skills</h1>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="boxes-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Home;Why study?;How to study?;*About;Contact" data-editable-mode="uielements" style="position: absolute; inset: 32.3px auto auto 359.6px; z-index: auto; width: 1193px; height: 59px;" id="mockElement_74390680425261">
+						<div class="editableArea" id="editableArea_74390680425261"><ul><li>Home</li><li>Why study?</li><li>How to study?</li><li class="item-highlighted">About</li><li>Contact</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### A website that helps you to make the most of an education course through teaching 'learning how to learn'." style="position: absolute; inset: 139.7px auto auto 224.5px; width: 1169px; z-index: auto; height: 62px;" id="mockElement_39178652667680">
+						<div class="editableArea" id="editableArea_39178652667680"><h3 id="awebsitethathelpsyoutomakethemostofaneducationcoursethroughteachinglearninghowtolearn">A website that helps you to make the most of an education course through teaching 'learning how to learn'.</h3></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="## Who set up this page
+
+I'm a student and have added what I find can help me with learning and study skills during a course.
+
+I'd like to share what has helped me on this site and will update it with new suggestions." style="position: absolute; top: 368px; left: 329px; width: 943px; height: 184px;" id="mockElement_76218602358041">
+						<div class="editableArea" id="editableArea_76218602358041"><h2 id="whosetupthispage">Who set up this page</h2>
+
+<p>I'm a student and have added what I find can help me with learning and study skills during a course.</p>
+
+<p>I'd like to share what has helped me on this site and will update it with new suggestions.</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="headline ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="LearningAndStudySkills" data-editable-mode="plain" style="position: absolute; top: 281.767px; left: 326.667px; width: 223px;" id="mockElement_64935650984707">
+						<h1 class="editableArea" id="editableArea_64935650984707">LearningAndStudySkills</h1>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div></div><div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 6017.07px auto auto 11.0667px; width: 1617px; height: 944px; z-index: auto;" id="mockElement_5542288841993">
+					<div class="entries-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="LearningAndStudySkills.ie;2019;email: lassinfo@learningandstudyskills.ie" data-editable-mode="uielements" style="position: absolute; inset: 887.9px auto auto 103.767px; width: 1492px; z-index: auto; height: 29px;" id="mockElement_39251505192842">
+						<div class="editableArea" id="editableArea_39251505192842"><ul><li>LearningAndStudySkills.ie</li><li>2019</li><li>email: lassinfo@learningandstudyskills.ie</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 2px auto auto 1px; width: 1607.13px; height: 121.133px; z-index: auto;" id="mockElement_88488078624546">
+					<div class="headline ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Study Skills" data-editable-mode="plain" style="position: absolute; inset: 47.7px auto auto 27.6px; width: 240px; z-index: auto; height: 38px;" id="mockElement_85804070686338">
+						<h1 class="editableArea" id="editableArea_85804070686338">Study Skills</h1>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="boxes-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Home;Why study?;How to study?;About;*Contact" data-editable-mode="uielements" style="position: absolute; inset: 32.3px auto auto 359.6px; z-index: auto; width: 1193px; height: 59px;" id="mockElement_2610551637795">
+						<div class="editableArea" id="editableArea_2610551637795"><ul><li>Home</li><li>Why study?</li><li>How to study?</li><li>About</li><li class="item-highlighted">Contact</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### A website that helps you to make the most of an education course through teaching 'learning how to learn'." style="position: absolute; inset: 122.7px auto auto 227.5px; width: 1169px; z-index: auto; height: 62px;" id="mockElement_11781811168737">
+						<div class="editableArea" id="editableArea_11781811168737"><h3 id="awebsitethathelpsyoutomakethemostofaneducationcoursethroughteachinglearninghowtolearn">A website that helps you to make the most of an education course through teaching 'learning how to learn'.</h3></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="## Get in touch
+
+If you would like to receive our email newsletter with more information on Study Skills please click here.
+
+
+## Join social media pages
+
+Join our social media pages or our forum.
+
+@Facebook&nbsp;  @Twitter   @Discourse
+
+
+
+## Suggestions for how to study
+
+Send your suggestion for how to study to lassinfo@learningandstudyskills.ie" style="position: absolute; inset: 283.833px auto auto 377.367px; width: 738px; height: 445px; z-index: auto;" id="mockElement_61351340833768">
+						<div class="editableArea" id="editableArea_61351340833768"><h2 id="getintouch">Get in touch</h2>
+
+<p>If you would like to receive our email newsletter with more information on Study Skills please click here.</p>
+
+<h2 id="joinsocialmediapages">Join social media pages</h2>
+
+<p>Join our social media pages or our forum.</p>
+
+<p>@Facebook&nbsp;  @Twitter   @Discourse</p>
+
+<h2 id="suggestionsforhowtostudy">Suggestions for how to study</h2>
+
+<p>Send your suggestion for how to study to lassinfo@learningandstudyskills.ie</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div></div><div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 2872.13px auto auto 13.3333px; width: 1616px; height: 1741px; z-index: auto;" id="mockElement_47865159628533">
+					<div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 3.7px auto auto 3.5px; width: 1605.13px; height: 105px; z-index: auto;" id="mockElement_59333588669972">
+					<div class="boxes-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Home;Why study?;*How to study?;About;Contact" data-editable-mode="uielements" style="position: absolute; inset: 25.3333px auto auto 278.267px; width: 1300px; height: 61px; z-index: auto;" id="mockElement_31669385923391">
+						<div class="editableArea" id="editableArea_31669385923391"><ul><li>Home</li><li>Why study?</li><li class="item-highlighted">How to study?</li><li>About</li><li>Contact</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="headline ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Study Skills" data-editable-mode="plain" style="position: absolute; inset: 35.5px auto auto 17.5px; width: 240px; z-index: auto; height: 38px;" id="mockElement_4309957548768">
+						<h1 class="editableArea" id="editableArea_4309957548768">Study Skills</h1>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="
+### Proactive Mindset &amp; Routine
+
+Prevent procrastination. Make a habit of starting your study work without delay.
+It's easy to become distracted by other things.
+
+But if you start and finish your work early you will have multiple benefits:
+
+* You will be finished early and will have free time to relax in the evening.
+* You will feel good when it's finished - you'll feel a sense of accomplishment.
+* Once you start your work, it's usually a bit more enjoyable and rewarding than you think it will be.
+
+" style="position: absolute; inset: 486.9px auto auto 251.3px; width: 628px; z-index: auto; height: 111px;" id="mockElement_86860610235444">
+						<div class="editableArea" id="editableArea_86860610235444"><h3 id="proactivemindsetroutine">Proactive Mindset &amp; Routine</h3>
+
+<p>Prevent procrastination. Make a habit of starting your study work without delay.
+It's easy to become distracted by other things.</p>
+
+<p>But if you start and finish your work early you will have multiple benefits:</p>
+
+<ul>
+<li>You will be finished early and will have free time to relax in the evening.</li>
+
+<li>You will feel good when it's finished - you'll feel a sense of accomplishment.</li>
+
+<li>Once you start your work, it's usually a bit more enjoyable and rewarding than you think it will be.</li>
+</ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 528.867px auto auto 1008.87px; width: 480px; height: 139px; z-index: auto;" id="mockElement_52348216820900">
+						<div class="editableArea" id="editableArea_52348216820900">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### A website that helps you to make the most of an education course through teaching 'learning how to learn'." style="position: absolute; inset: 120.7px auto auto 227.5px; width: 1169px; z-index: auto; height: 62px;" id="mockElement_7027127763787">
+						<div class="editableArea" id="editableArea_7027127763787"><h3 id="awebsitethathelpsyoutomakethemostofaneducationcoursethroughteachinglearninghowtolearn">A website that helps you to make the most of an education course through teaching 'learning how to learn'.</h3></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="## How to study - Study skills for learning effectively
+### How to study effectively.
+
+Studying effectively while doing your course will allow you to maximise your learning from the course.
+<br><br>
+
+Below are some study methods that I think are most effective for gaining value from a course.
+
+<br>
+" style="position: absolute; inset: 226.933px auto auto 217.9px; width: 766px; height: 169px; z-index: auto;" id="mockElement_12739406358946">
+						<div class="editableArea" id="editableArea_12739406358946"><h2 id="howtostudystudyskillsforlearningeffectively">How to study - Study skills for learning effectively</h2>
+
+<h3 id="howtostudyeffectively">How to study effectively.</h3>
+
+<p>Studying effectively while doing your course will allow you to maximise your learning from the course.
+<br><br></p>
+
+<p>Below are some study methods that I think are most effective for gaining value from a course.</p>
+
+<p><br></p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="entries-vertical ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="*Proactive Mindset;Reducing Expectations;Comfortable work environment;Health &amp; Energy; Motivation" data-editable-mode="uielements" style="position: absolute; inset: 511px auto auto 15.0333px; width: 189px; height: 460px; z-index: auto;" id="mockElement_63868230145182">
+						<div class="editableArea" id="editableArea_63868230145182"><ul><li class="item-highlighted">Proactive Mindset</li><li>Reducing Expectations</li><li>Comfortable work environment</li><li>Health &amp; Energy</li><li> Motivation</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### Reducing expectations, pressure and stress
+
+In order to get your work done it can be useful to reduce your expectations of the quality.
+
+* Make your goal to complete your study work, even if it isn't very good.
+* Once you have developed the habit of completing work you can then make an effort to perform well at the work and produce quality work.
+* Consistently doing your work is more important than doing quality work at first.
+" style="position: absolute; inset: 769.367px auto auto 267.767px; width: 650px; height: 155px; z-index: auto;" id="mockElement_51437422664273">
+						<div class="editableArea" id="editableArea_51437422664273"><h3 id="reducingexpectationspressureandstress">Reducing expectations, pressure and stress</h3>
+
+<p>In order to get your work done it can be useful to reduce your expectations of the quality.</p>
+
+<ul>
+<li>Make your goal to complete your study work, even if it isn't very good.</li>
+
+<li>Once you have developed the habit of completing work you can then make an effort to perform well at the work and produce quality work.</li>
+
+<li>Consistently doing your work is more important than doing quality work at first.</li>
+</ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 769.2px auto auto 1018.2px; width: 480px; height: 144px; z-index: auto;" id="mockElement_24546498217127">
+						<div class="editableArea" id="editableArea_24546498217127">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### Comfortable work environment
+
+You should have a quiet space that you can work in so that you don’t get interrupted often while working.
+
+You should work in a well lit, ventilated room and have a comfortable chair to sit in." style="position: absolute; inset: 1013.23px auto auto 251.067px; width: 606px; z-index: auto; height: 172px;" id="mockElement_22218692102116">
+						<div class="editableArea" id="editableArea_22218692102116"><h3 id="comfortableworkenvironment">Comfortable work environment</h3>
+
+<p>You should have a quiet space that you can work in so that you don’t get interrupted often while working.</p>
+
+<p>You should work in a well lit, ventilated room and have a comfortable chair to sit in.</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 1233px auto auto 1015.07px; width: 480px; height: 144px; z-index: auto;" id="mockElement_17104091346113">
+						<div class="editableArea" id="editableArea_17104091346113">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### Health, Energy and taking breaks
+
+You should try to get 7-8 hours of sleep at night if possible.
+
+If you are very tired you should take a 20 minute nap. When you wake up you should have a more clear head and be ready to do some more effective study.
+
+You should take regular breaks when you need them and have enough food to give you energy.
+
+If you feel very tired or stressed then you might need to take a break and figure out why you might be stressed or tired." style="position: absolute; inset: 1210.97px auto auto 253.8px; width: 606px; z-index: auto; height: 172px;" id="mockElement_20895634576003">
+						<div class="editableArea" id="editableArea_20895634576003"><h3 id="healthenergyandtakingbreaks">Health, Energy and taking breaks</h3>
+
+<p>You should try to get 7-8 hours of sleep at night if possible.</p>
+
+<p>If you are very tired you should take a 20 minute nap. When you wake up you should have a more clear head and be ready to do some more effective study.</p>
+
+<p>You should take regular breaks when you need them and have enough food to give you energy.</p>
+
+<p>If you feel very tired or stressed then you might need to take a break and figure out why you might be stressed or tired.</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 1019.07px auto auto 1014.07px; width: 480px; height: 170px; z-index: auto;" id="mockElement_24865937159454">
+						<div class="editableArea" id="editableArea_24865937159454">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="entries-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="LearningAndStudySkills.ie;2019;email: lassinfo@learningandstudyskills.ie" data-editable-mode="uielements" style="position: absolute; inset: 1698.23px auto auto 66.1px; width: 1492px; z-index: auto; height: 29px;" id="mockElement_75937461206486">
+						<div class="editableArea" id="editableArea_75937461206486"><ul><li>LearningAndStudySkills.ie</li><li>2019</li><li>email: lassinfo@learningandstudyskills.ie</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### Staying Motivated - by remembering why you are working
+
+Check your reasons for studying in 'Why Study?' page if you need some motivation to study or if you find you aren't completing your study work.
+
+If you still aren't motivated it might be worth consulting with someone who could help you figure out a plan to move forward." style="position: absolute; inset: 1473.3px auto auto 253.133px; width: 606px; z-index: auto; height: 172px;" id="mockElement_78580248970111">
+						<div class="editableArea" id="editableArea_78580248970111"><h3 id="stayingmotivatedbyrememberingwhyyouareworking">Staying Motivated - by remembering why you are working</h3>
+
+<p>Check your reasons for studying in 'Why Study?' page if you need some motivation to study or if you find you aren't completing your study work.</p>
+
+<p>If you still aren't motivated it might be worth consulting with someone who could help you figure out a plan to move forward.</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 1486.8px auto auto 1012.8px; width: 480px; height: 170px; z-index: auto;" id="mockElement_76781576039857">
+						<div class="editableArea" id="editableArea_76781576039857">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div></div><div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable custom-selected" style="position: absolute; inset: 1156.53px auto auto 16.7333px; width: 1616px; height: 1529px; z-index: auto;" id="mockElement_90000154453600">
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div><div class="rect ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" style="position: absolute; inset: 3.7px auto auto 3.5px; width: 1605.13px; height: 105px; z-index: auto;" id="mockElement_13815924701594">
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div><div class="boxes-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Home;*Why study?;How to study?;About;Contact" data-editable-mode="uielements" style="position: absolute; inset: 25.3333px auto auto 278.267px; width: 1300px; height: 61px; z-index: auto;" id="mockElement_69731344758781">
+						<div class="editableArea" id="editableArea_69731344758781"><ul><li>Home</li><li class="item-highlighted">Why study?</li><li>How to study?</li><li>About</li><li>Contact</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="headline ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Study Skills" data-editable-mode="plain" style="position: absolute; inset: 35.5px auto auto 17.5px; width: 240px; z-index: auto; height: 38px;" id="mockElement_89306578643125">
+						<h1 class="editableArea" id="editableArea_89306578643125">Study Skills</h1>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="
+### Gaining Skills
+
+You will have learned the skills that are involved in the course. You can put these skills to use in your own life, through hobbies and in a career setting.
+
+" style="position: absolute; inset: 486.9px auto auto 251.3px; width: 628px; z-index: auto; height: 111px;" id="mockElement_99854927986358">
+						<div class="editableArea" id="editableArea_99854927986358"><h3 id="gainingskills">Gaining Skills</h3>
+
+<p>You will have learned the skills that are involved in the course. You can put these skills to use in your own life, through hobbies and in a career setting.</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="entries-horizontal ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="LearningAndStudySkills.ie;2019;email: lassinfo@learningandstudyskills.ie" data-editable-mode="uielements" style="position: absolute; inset: 1485.5px auto auto 71.3666px; width: 1492px; z-index: auto; height: 29px;" id="mockElement_31314444257199">
+						<div class="editableArea" id="editableArea_31314444257199"><ul><li>LearningAndStudySkills.ie</li><li>2019</li><li>email: lassinfo@learningandstudyskills.ie</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### Qualification
+
+By completing the course you will achieve a certification that can be shown to employers and which will help you to be hired in a job you would love to work in." style="position: absolute; inset: 1225.63px auto auto 234.467px; width: 606px; z-index: auto; height: 172px;" id="mockElement_20207707315775">
+						<div class="editableArea" id="editableArea_20207707315775"><h3 id="qualification">Qualification</h3>
+
+<p>By completing the course you will achieve a certification that can be shown to employers and which will help you to be hired in a job you would love to work in.</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 528.867px auto auto 1008.87px; width: 480px; height: 233px; z-index: auto;" id="mockElement_89998839325399">
+						<div class="editableArea" id="editableArea_89998839325399">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 1205.6px auto auto 1012.6px; width: 480px; height: 233px; z-index: auto;" id="mockElement_47601424520225">
+						<div class="editableArea" id="editableArea_47601424520225">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### Practicing Work habits and skills
+You will learn good work habits and skills regarding how to work effectively. This happens through carrying out the study and homework practises that the course entails. After completing the course you will be able to use these work habits and skills to carry out work more effectively in your own life and career.
+" style="position: absolute; inset: 862.767px auto auto 239.167px; width: 650px; height: 155px; z-index: auto;" id="mockElement_77086657881265">
+						<div class="editableArea" id="editableArea_77086657881265"><h3 id="practicingworkhabitsandskills">Practicing Work habits and skills</h3>
+
+<p>You will learn good work habits and skills regarding how to work effectively. This happens through carrying out the study and homework practises that the course entails. After completing the course you will be able to use these work habits and skills to carry out work more effectively in your own life and career.</p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="imageplaceholder ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Image" data-editable-mode="plain" style="position: absolute; inset: 857.467px auto auto 1010.47px; width: 480px; height: 233px; z-index: auto;" id="mockElement_33832434009355">
+						<div class="editableArea" id="editableArea_33832434009355">Image</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="### A website that helps you to make the most of an education course through teaching 'learning how to learn'." style="position: absolute; inset: 126.7px auto auto 227.5px; width: 1169px; z-index: auto; height: 62px;" id="mockElement_73488149216273">
+						<div class="editableArea" id="editableArea_73488149216273"><h3 id="awebsitethathelpsyoutomakethemostofaneducationcoursethroughteachinglearninghowtolearn">A website that helps you to make the most of an education course through teaching 'learning how to learn'.</h3></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div><div class="paragraph ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="## Motivation to study
+
+Studying effectively while doing your course will allow you to maximise your learning from the course.
+<br><br>
+
+Completing a course will be of great benefit. It has multiple benefits:
+
+<br>
+" style="position: absolute; inset: 222.933px auto auto 223.9px; width: 868px; height: 169px; z-index: auto;" id="mockElement_20275164208098">
+						<div class="editableArea" id="editableArea_20275164208098"><h2 id="motivationtostudy">Motivation to study</h2>
+
+<p>Studying effectively while doing your course will allow you to maximise your learning from the course.
+<br><br></p>
+
+<p>Completing a course will be of great benefit. It has multiple benefits:</p>
+
+<p><br></p></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="entries-vertical ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="*Gaining Skills;Work habits;Qualification" data-editable-mode="uielements" style="position: absolute; inset: 510.367px auto auto 18.9px; width: 169px; height: 321px; z-index: auto;" id="mockElement_63348976004247">
+						<div class="editableArea" id="editableArea_63348976004247"><ul><li class="item-highlighted">Gaining Skills</li><li>Work habits</li><li>Qualification</li></ul></div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div><div class="meta-element arrownote ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="Navigation buttons that follow the page scrolling." data-editable-mode="plain" style="position: absolute; top: 655.217px; left: 211.133px; height: 100px;" id="mockElement_32995983185805">
+						<div class="editableArea" id="editableArea_32995983185805">Navigation buttons that follow the page scrolling.</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div></div><div class="meta-element arrownote ui-draggable ui-draggable-handle mockElement ui-resizable ui-droppable" data-editable-content="desktop navigation bar. Hamburger menu on mobile screens" data-editable-mode="plain" style="position: absolute; top: 125.183px; left: 1599.3px; height: 108px;" id="mockElement_45897469364663">
+						<div class="editableArea" id="editableArea_45897469364663">desktop navigation bar. Hamburger menu on mobile screens</div>
+					<div class="ui-resizable-handle ui-resizable-n" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90; display: block;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90; display: block;"></div></div></div>
+		</div>
+
+	<div id="toolbar">
+		<input type="file" id="loadFile" style="display:none">
+		<button id="loadFileButton">Open</button>
+		<button id="saveFile">Save</button>
+
+		<button class="delete-element-button" title="deletes the currently selected element (del)">✖ Delete Element</button>
+		<button class="undelete-element-button" title="undeletes most recently deleted element (Ctrl+Z)">↶</button>
+		<button class="duplicate-element-button" title="duplicates currently selected element (Ctrl+D)">⚭ Duplicate Element</button>
+		<button class="change-canvasize-button" title="change size of the area you place elements on">⇲ Change Canvas Size</button>
+	<button title="exports to codepen. »Save« on codepen to get a sharable URL">↗ to Codepen</button></div>
+
+
+	
+
+</div>
+
+<script src="scripts/webedit.js"></script>
+
+
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable" style="position: absolute; height: auto; width: 300px; top: 479px; left: 974.5px; display: none;" tabindex="-1" role="dialog" aria-describedby="changeCanvasSizeDialog" aria-labelledby="ui-id-1"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle"><span id="ui-id-1" class="ui-dialog-title">&nbsp;</span><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" title="Close"><span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">Close</span></button></div><div id="changeCanvasSizeDialog" class="dialog ui-dialog-content ui-widget-content" style="display: block; width: auto; min-height: 12px; max-height: none; height: auto;">
+	<p>Change the size of the Canvas</p>
+	<label>Width:<br><input type="text" name="width"></label><br>
+	<label>Height:<br><input type="text" name="height"></label>
+	</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button"><span class="ui-button-text">OK</span></button><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button"><span class="ui-button-text">Cancel</span></button></div></div><div class="ui-resizable-handle ui-resizable-n" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-w" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-sw" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-ne" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-nw" style="z-index: 90;"></div></div></body></html>
