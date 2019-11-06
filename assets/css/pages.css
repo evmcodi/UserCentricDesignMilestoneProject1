@@ -1,0 +1,85 @@
+
+
+/* Mobile styling for whystudy.html page */
+
+#content-why {
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+/* Desktop styling for whystudy.html */
+/* @media (min-width: 767px) {
+
+    #content-why {
+        display: grid;
+        grid-template: 20px 1fr 20px 1fr 20px 1fr 20px / 2fr 20px 2fr;
+
+    }
+} */
+
+
+/* Mobile styling for howtostudy.html page */
+
+#content-how {
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+/* Desktop styling for howtostudy.html */
+/* @media (min-width: 767px) {
+
+    #content-how {
+        display: grid;
+        grid-template: 20px 1fr 20px 1fr 20px 1fr 20px / 2fr 20px 2fr;
+
+    }
+} */
+
+
+
+
+/* Mobile styling for about.html page */
+
+#content-about {
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+/* Desktop styling for about.html */
+/* @media (min-width: 767px) {
+
+    #content-about {
+        display: grid;
+        grid-template: 20px 1fr 20px 1fr 20px 1fr 20px / 2fr 20px 2fr;
+
+    }
+} */
+
+
+
+
+
+/* Mobile styling for contact.html page */
+
+#content-contact {
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+/* Desktop styling for contact.html */
+/* @media (min-width: 767px) {
+
+    #content-contact {
+        display: grid;
+        grid-template: 20px 1fr 20px 1fr 20px 1fr 20px / 2fr 20px 2fr;
+
+    }
+} */
