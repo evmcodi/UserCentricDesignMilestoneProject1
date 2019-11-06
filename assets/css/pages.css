@@ -1,5 +1,3 @@
-
-
 /* Mobile styling for whystudy.html page */
 
 #content-why {
@@ -8,18 +6,103 @@
 
 }
 
+.img-why {
+    object-fit: cover;
+    height: 300px;
+
+    opacity: 80%;
+    z-index: -1;
+
+    width: 100%;
+}
+
 
 /* Desktop styling for whystudy.html */
-/* @media (min-width: 767px) {
+@media (min-width: 767px) {
 
     #content-why {
         display: grid;
-        grid-template: 20px 1fr 20px 1fr 20px 1fr 20px / 2fr 20px 2fr;
+        grid-template: 20px auto 20px auto 20px auto 20px auto 20px / 2fr 20px 2fr;
 
     }
-} */
 
 
+    #content-why .text-intro {
+        grid-column-start: 1;
+        grid-column-end: 4;
+
+        grid-row-start: 2;
+        grid-row-end: 3;
+    }
+
+
+
+    #content-why .text-one {
+        grid-column-start: 1;
+        grid-column-end: 2;
+
+        grid-row-start: 4;
+        grid-row-end: 5;
+    }
+
+    #content-why .text-two {
+        grid-column-start: 1;
+        grid-column-end: 2;
+
+        grid-row-start: 6;
+        grid-row-end: 7;
+    }
+
+    #content-why .text-three {
+        grid-column-start: 1;
+        grid-column-end: 2;
+
+        grid-row-start: 8;
+        grid-row-end: 9;
+    }
+
+    #content-why .img-one {
+        height: auto;
+        /* max-width: 150px; */
+        grid-column: 3 / 4;
+        grid-row: 4/5;
+
+    }
+
+    #content-why .img-two {
+        height: auto;
+        /* max-width: 200px; */
+        grid-column: 3 / 4;
+        grid-row: 6/7;
+
+    }
+
+
+    #content-why .img-three {
+        height: auto;
+        /* max-width: 200px; */
+        grid-column: 3 / 4;
+        grid-row: 8/9;
+
+    }
+
+    .img-why {
+        max-width: 400px;
+        width: unset;
+    }
+
+    .imgdiv {
+        display: flex;
+        justify-content: center;
+    }
+
+}
+
+
+
+
+
+/* ------------------------------------------------ */
 /* Mobile styling for howtostudy.html page */
 
 #content-how {
@@ -28,20 +111,126 @@
 
 }
 
+.img-how {
+    object-fit: cover;
+    height: 300px;
+
+    opacity: 80%;
+    z-index: -1;
+
+    width: 100%;
+}
+
 
 /* Desktop styling for howtostudy.html */
-/* @media (min-width: 767px) {
+@media (min-width: 767px) {
 
     #content-how {
         display: grid;
-        grid-template: 20px 1fr 20px 1fr 20px 1fr 20px / 2fr 20px 2fr;
+        grid-template: 20px auto 20px auto 20px auto 20px auto 20px auto 20px/ 2fr 20px 2fr;
 
     }
-} */
+
+
+    #content-how .text-intro {
+        grid-column-start: 1;
+        grid-column-end: 4;
+
+        grid-row-start: 2;
+        grid-row-end: 3;
+    }
 
 
 
+    #content-how .text-one {
+        grid-column-start: 1;
+        grid-column-end: 2;
 
+        grid-row-start: 4;
+        grid-row-end: 5;
+    }
+
+    #content-how .text-two {
+        grid-column-start: 1;
+        grid-column-end: 2;
+
+        grid-row-start: 6;
+        grid-row-end: 7;
+    }
+
+    #content-how .text-three {
+        grid-column-start: 1;
+        grid-column-end: 2;
+
+        grid-row-start: 8;
+        grid-row-end: 9;
+    }
+
+    #content-how .text-four {
+        grid-column-start: 1;
+        grid-column-end: 2;
+
+        grid-row-start: 10;
+        grid-row-end: 11;
+    }
+
+    #content-how .text-five {
+        grid-column-start: 1;
+        grid-column-end: 2;
+
+        grid-row-start: 12;
+        grid-row-end: 13;
+    }
+
+    #content-how .img-one {
+        height: auto;
+        /* max-width: 150px; */
+        grid-column: 3 / 4;
+        grid-row: 4/5;
+
+    }
+
+    #content-how .img-two {
+        height: auto;
+        /* max-width: 200px; */
+        grid-column: 3 / 4;
+        grid-row: 6/7;
+
+    }
+
+
+    #content-how .img-three {
+        height: auto;
+        /* max-width: 200px; */
+        grid-column: 3 / 4;
+        grid-row: 8/9;
+
+    }
+
+    #content-how .img-four {
+        height: auto;
+        /* max-width: 200px; */
+        grid-column: 3 / 4;
+        grid-row: 10/11;
+
+    }
+
+    #content-how .img-five {
+        height: auto;
+        /* max-width: 200px; */
+        grid-column: 3 / 4;
+        grid-row: 12/13;
+
+    }
+
+    .img-how {
+        max-width: 400px;
+        width: unset;
+    }
+
+}
+
+/* --------------------------------------------------- */
 /* Mobile styling for about.html page */
 
 #content-about {
@@ -52,14 +241,14 @@
 
 
 /* Desktop styling for about.html */
-/* @media (min-width: 767px) {
+@media (min-width: 767px) {
 
     #content-about {
         display: grid;
-        grid-template: 20px 1fr 20px 1fr 20px 1fr 20px / 2fr 20px 2fr;
+        grid-template: 20px auto 20px auto 20px auto 20px / 2fr 20px 2fr;
 
     }
-} */
+}
 
 
 
@@ -75,11 +264,11 @@
 
 
 /* Desktop styling for contact.html */
-/* @media (min-width: 767px) {
+@media (min-width: 767px) {
 
     #content-contact {
         display: grid;
-        grid-template: 20px 1fr 20px 1fr 20px 1fr 20px / 2fr 20px 2fr;
+        grid-template: 20px auto 20px auto 20px auto 20px / 2fr 20px 2fr;
 
     }
-} */
+}
