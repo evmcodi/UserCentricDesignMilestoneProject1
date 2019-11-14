@@ -34,20 +34,17 @@
             </a>
         </div>
 
-
-        <div class="topnavmob" id="myTopnavmob">
-
-
-            <a href="index.html">Home</a>
-            <a href="whystudy.html">Why study?</a>
-            <a href="howtostudy.html">How to Study</a>
-            <a href="about.html">About</a>
-            <a href="contact.html" class="active">Contact</a>
-
-
-
-        </div>
     </header>
+
+    <div class="topnavmob" id="myTopnavmob">
+
+        <a href="index.html">Home</a>
+        <a href="whystudy.html">Why study?</a>
+        <a href="howtostudy.html">How to Study</a>
+        <a href="about.html">About</a>
+        <a href="contact.html" class="active">Contact</a>
+
+    </div>
 
 
 
@@ -86,14 +83,57 @@
         <h3>Get in touch</h3>
         <p>If you would like to receive our email newsletter with more information on Study Skills please enter your
             email here.</p>
-        <form>
-            <input type="text" name="" id="" placeholder="Name (optional)">
-            <input type="email" name="" id="" placeholder="Email">
-            <p for="">Do you wish to be added to the newsletter?</p>
-            <input type="checkbox" name="" id="">
-            <input type="text" name="" id="">
-            <input type="submit" value="">
-        </form>
+
+
+        <h2>Responsive Form</h2>
+        <p>Resize the browser window to see the effect. When the screen is less than 600px wide, make the two columns
+            stack on top of each other instead of next to each other.</p>
+
+        <div class="container">
+            <form action="/action_page.php">
+                <div class="row">
+                    <div class="col-25">
+                        <label for="fname">First Name</label>
+                    </div>
+                    <div class="col-75">
+                        <input type="text" id="fname" name="firstname" placeholder="Your name..">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="lname">Last Name</label>
+                    </div>
+                    <div class="col-75">
+                        <input type="text" id="lname" name="lastname" placeholder="Your last name..">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="country">Country</label>
+                    </div>
+                    <div class="col-75">
+                        <select id="country" name="country">
+                            <option value="australia">Australia</option>
+                            <option value="canada">Canada</option>
+                            <option value="usa">USA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="subject">Subject</label>
+                    </div>
+                    <div class="col-75">
+                        <textarea id="subject" name="subject" placeholder="Write something.."
+                            style="height:200px"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+
 
         <h3>Join social media pages</h3>
         <p>Join our social media pages or our forum.</p>
@@ -103,9 +143,10 @@
         <p>If you have any suggestions please contact info@studytips.ie</p>
 
 
-
-
     </article>
+
+    <div class="footer-spacer"></div>
+
 
     <!-- Footer -->
     <footer>

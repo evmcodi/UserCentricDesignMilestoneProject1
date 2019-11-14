@@ -27,6 +27,36 @@
     }
 }
 
+@keyframes imgfadein {
+    from {
+        opacity: 20%;
+    }
+
+    to {
+        opacity: 80%;
+    }
+}
+
+
+
+article,
+.subheader {
+    /* page fade-in animation */
+    animation-name: pagefadein;
+    animation-duration: 400ms;
+    animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+}
+
+img {
+    animation-name: imgfadein;
+    animation-duration: 1.2s;
+    animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+}
+
 
 
 
@@ -47,13 +77,6 @@ body {
     /* 100% height so footer is positioned at page bottom */
     height: 100%;
     min-height: 1vh;
-
-    /* page fade-in animation */
-    animation-name: pagefadein;
-    animation-duration: 400ms;
-    animation-timing-function: ease-in;
-    animation-fill-mode: forwards;
-    animation-iteration-count: 1;
 
 }
 
@@ -177,7 +200,9 @@ a {
 
     .pagetitlemob a.icon {
         float: right;
-        display: block;
+        display: absolute;
+        right: 0;
+        top: 0;
     }
 
 
@@ -196,6 +221,7 @@ a {
         float: none;
         display: block;
         text-align: left;
+        top: 40px;
     }
 }
 
@@ -203,6 +229,12 @@ a {
 /* Desktop navigation bar */
 
 @media (min-width: 767px) {
+
+    .topnavmob {
+        display: none;
+    }
+
+
     .myheader {
         display: flex;
         align-items: center;
@@ -308,6 +340,17 @@ a {
     text-align: center;
     /* border: 10px solid #444; */
     background-color: #333;
+    /* padding: 20px; */
+    margin-left: 20%;
+    margin-right: 20%;
+    /* padding: 10px; */
+}
+
+.subheader h3 {
+    background-color: #333;
+    padding: 20px;
+    display: block;
+
 }
 
 
@@ -343,13 +386,14 @@ a {
     width: 100%;
     margin-bottom: 40px;
     margin-top: 0px;
+    max-width: 767px;
 }
 
 .homecontent {
     margin-right: 0px;
     margin-left: 0px;
 
-    grid-column-start: 0;
+    grid-column-start: 1;
 }
 
 
@@ -411,6 +455,12 @@ footer {
         justify-content: space-evenly;
         flex-direction: row;
     }
+}
+
+
+/* Footer spacer */
+.footer-spacer {
+    height: 100px;
 }
 
 
