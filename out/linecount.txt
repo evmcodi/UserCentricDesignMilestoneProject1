@@ -1,0 +1,34 @@
+===============================================================================
+EXTENSION NAME : linecount
+EXTENSION VERSION : 0.1.7
+-------------------------------------------------------------------------------
+count time : 2019-11-07 00:03:15
+count workspace : /home/owner/Documents/Code Institute Course/Project1 -/StudySkills
+total files : 22
+total code lines : 1630
+total comment lines : 169
+total blank lines : 585
+
+about.html, code is 56, comment is 19, blank is 41.
+assets/css/pages.css, code is 168, comment is 18, blank is 92.
+assets/css/style.css, code is 259, comment is 55, blank is 134.
+assets/fonts/Gidole-Regular.ttf, it is a binary file.
+assets/fonts/Montserrat-Regular.otf, it is a binary file.
+assets/images/certificate-2760734__340.png, it is a binary file.
+assets/images/chairs-2181960__340.jpg, it is a binary file.
+assets/images/feedback-3677258__340.jpg, it is a binary file.
+assets/images/laptop-3289261__340.jpg, it is a binary file.
+assets/images/office-1209640__340.jpg, it is a binary file.
+assets/images/office-1834294__340.jpg, it is a binary file.
+assets/images/positive-2470506__340.jpg, it is a binary file.
+assets/images/sport-1201014__340.jpg, it is a binary file.
+assets/images/startup-593327_1920.jpg, it is a binary file.
+assets/images/toast-1077889__340.jpg, it is a binary file.
+assets/js/main.js, code is 8, comment is 2, blank is 2.
+contact.html, code is 69, comment is 9, blank is 44.
+howtostudy.html, code is 71, comment is 8, blank is 40.
+index.html, code is 45, comment is 9, blank is 34.
+README.md, code is 17, comment is 2, blank is 16.
+studytips-wireframe.html, code is 837, comment is 30, blank is 131.
+whystudy.html, code is 100, comment is 17, blank is 51.
+===============================================================================
