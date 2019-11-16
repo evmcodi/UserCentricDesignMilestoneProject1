@@ -85,14 +85,17 @@ body {
 h1 {
     /* padding: 20px; */
     margin: 20px;
+    text-align: center;
 }
 
 h2 {
     margin: 20px;
+    text-align: center;
 }
 
 h3 {
     margin: 20px;
+    text-align: center;
 }
 
 
@@ -107,6 +110,10 @@ p {
     p {
         margin: 30px;
     }
+}
+
+li {
+    font-family: 'MontserratRegular', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 
@@ -432,7 +439,7 @@ a {
 footer {
     display: none;
     background-color: #333;
-    padding: 20px;
+    padding: 10px;
 
     /* display: flex; */
     /* flex-direction: column; */

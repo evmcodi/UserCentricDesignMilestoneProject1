@@ -1,10 +1,27 @@
+/* margin before images*/
+.imgdiv {
+    margin-top: 70px;
+}
+
+@media (min-width: 767px) {
+    .imgdiv {
+        margin-top: 0px;
+    }
+}
+
+
+.hzline {
+    border-bottom: 3px solid #000;
+}
+
+
 /* Mobile styling for whystudy.html page */
 
 #content-why {
     display: flex;
     flex-direction: column;
 
-    margin-left: 30px;
+    /* margin-left: 30px; */
 
 }
 
@@ -18,6 +35,28 @@
     width: 100%;
 }
 
+@media (min-width: 1199px) {
+
+    .content-wrapper {
+        max-width: 1200px;
+
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #content-how {
+        max-width: 1200px;
+
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+
+
+}
+
+
 
 /* Desktop styling for whystudy.html */
 @media (min-width: 767px) {
@@ -26,6 +65,10 @@
         display: flex;
         justify-content: center;
         /* max-width: 70%; */
+        /* margin-left: 20%;
+        margin-right: 20%; */
+
+        max-width: 1200px;
     }
 
     #content-why {
@@ -42,6 +85,13 @@
 
         grid-row-start: 2;
         grid-row-end: 3;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
+        text-align: center;
     }
 
 
@@ -52,6 +102,13 @@
 
         grid-row-start: 4;
         grid-row-end: 5;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
+        /* text-align: justify; */
     }
 
     #content-why .text-two {
@@ -60,6 +117,13 @@
 
         grid-row-start: 6;
         grid-row-end: 7;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
+        /* text-align: justify; */
     }
 
     #content-why .text-three {
@@ -68,6 +132,13 @@
 
         grid-row-start: 8;
         grid-row-end: 9;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
+        /* text-align: justify; */
     }
 
     #content-why .img-one {
@@ -118,7 +189,7 @@
     display: flex;
     flex-direction: column;
 
-    margin-left: 30px;
+    /* margin-left: 30px; */
 
 }
 
@@ -140,6 +211,10 @@
         display: grid;
         grid-template: 20px auto 20px auto 20px auto 20px auto 20px auto 20px/ 2fr 20px 2fr;
 
+        /* margin-left: 20%;
+        margin-right: 20%; */
+        max-width: 1200px;
+
     }
 
 
@@ -159,6 +234,12 @@
 
         grid-row-start: 4;
         grid-row-end: 5;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
     }
 
     #content-how .text-two {
@@ -167,6 +248,12 @@
 
         grid-row-start: 6;
         grid-row-end: 7;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
     }
 
     #content-how .text-three {
@@ -175,6 +262,12 @@
 
         grid-row-start: 8;
         grid-row-end: 9;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
     }
 
     #content-how .text-four {
@@ -183,6 +276,12 @@
 
         grid-row-start: 10;
         grid-row-end: 11;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
     }
 
     #content-how .text-five {
@@ -191,6 +290,12 @@
 
         grid-row-start: 12;
         grid-row-end: 13;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+
     }
 
     #content-how .img-one {
@@ -255,9 +360,10 @@
 @media (min-width: 767px) {
 
     #content-about {
-        display: grid;
-        grid-template: 20px auto 20px auto 20px auto 20px / 2fr 20px 2fr;
+        max-width: 767px;
 
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
@@ -344,8 +450,10 @@ input[type=submit] {
 @media (min-width: 767px) {
 
     #content-contact {
-        display: grid;
-        grid-template: 20px auto 20px auto 20px auto 20px / 2fr 20px 2fr;
+        max-width: 767px;
+
+        margin-left: auto;
+        margin-right: auto;
 
     }
 }
