@@ -1,3 +1,8 @@
+/* Styling for this site is provided in this css file 'style.css' as 
+well as 'pages.css'
+A fade-in animation is used to provide an opacity fade in effect 
+whenever a page is loaded to the screen. */
+
 /* Fonts for page */
 
 @font-face {
