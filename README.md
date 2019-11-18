@@ -107,17 +107,19 @@ The site was tested on multiple devices to ensure consistent and working deploym
 
 StudyTips is hosted on Github pages. 
 
-There was an issue with the relative links of the fonts and the favicon files when the site was uploaded to Github, which resulted in a 404 http error being shown in Firefox Developer Tools for each of these files. In order to fix this deployment issue a change in the linking was added with the addition of "../../" before the assets folder link.
+There was an issue with the relative links of the fonts and the favicon files when the site was uploaded to Github, which resulted in a 404 http error being shown in Firefox Developer Tools for each of these files. 
+
+In order to fix this deployment issue a change in the linking was added with the addition of "../../" before the assets folder link.
 
 ### Cloning and editing
 
-This site can be cloned with ```git clone``` and the files can be edited directly and viewed in a browser.
+This site can be cloned with ```git clone https://github.com/evmcodi/UserCentricDesignMilestoneProject1.git```, or by clicking the 'Download as .zip' button at the top of this repo and the files can be edited directly and viewed in a browser.
 
 ## Credits
 
 ### Content
 
-All content in the pages of this site were written by me.
+All written content in the pages of this site were written by me.
 
 
 ### Media
