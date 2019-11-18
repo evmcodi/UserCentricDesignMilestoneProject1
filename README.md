@@ -4,7 +4,7 @@ This is a website to help students to make the most of an education course throu
 
 ## Demo
 
-There is a live demo available [here](https://evmcodi.github.io/UserCentricDesignMilestoneProject1/index.html)
+There is a live demo available [here](https://evmcodi.github.io/UserCentricDesignMilestoneProject1/index.html).
 
 ![Desktop Demo](desktopdemo.png "Desktop Demo")
 
