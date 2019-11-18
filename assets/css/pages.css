@@ -6,6 +6,7 @@
 @media (min-width: 767px) {
     .imgdiv {
         margin-top: 0px;
+        align-items: center;
     }
 }
 
@@ -436,13 +437,17 @@ input[type=submit] {
 }
 
 input[type=submit]:hover {
-    background-color: #45a049;
+    background-color: rgb(116, 184, 240);
 }
 
 .container {
     border-radius: 5px;
     /* background-color: #f2f2f2; */
     padding: 20px;
+
+    border: rgb(116, 184, 240) solid 1px;
+
+    
 }
 
 .col-25,
@@ -453,9 +458,7 @@ input[type=submit]:hover {
 
 
 
-
-/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 767px) {
 
     .row {
         flex-direction: row;
