@@ -107,6 +107,8 @@ The site was tested on multiple devices to ensure consistent and working deploym
 
 StudyTips is hosted on Github pages. 
 
+It was deployed following the procedure outlined in the [Github Pages documentation](https://help.github.com/en/github/working-with-github-pages/creating-a-github-pages-site).
+
 There was an issue with the relative links of the fonts and the favicon files when the site was uploaded to Github, which resulted in a 404 http error being shown in Firefox Developer Tools for each of these files. 
 
 In order to fix this deployment issue a change in the linking was added with the addition of "../../" before the assets folder link.
